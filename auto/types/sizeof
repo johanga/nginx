@@ -12,9 +12,12 @@ checking for $ngx_type size
 
 END
 
-ngx_size=
+ngx_size=$(eval "echo \$NGX_WITH_${ngx_param}")
 
-cat << END > $NGX_AUTOTEST.c
+if [ ".$ngx_size" != "." ]; then
+    echo " $ngx_size bytes"
+else
+    cat << END > $NGX_AUTOTEST.c
 
 #include <sys/types.h>
 #include <sys/time.h>
@@ -32,18 +35,17 @@ int main(void) {
 
 END
 
-
-ngx_test="$CC $CC_TEST_FLAGS $CC_AUX_FLAGS \
+    ngx_test="$CC $CC_TEST_FLAGS $CC_AUX_FLAGS \
           -o $NGX_AUTOTEST $NGX_AUTOTEST.c $NGX_LD_OPT $ngx_feature_libs"
 
-eval "$ngx_test >> $NGX_AUTOCONF_ERR 2>&1"
+    eval "$ngx_test >> $NGX_AUTOCONF_ERR 2>&1"
 
 
-if [ -x $NGX_AUTOTEST ]; then
-    ngx_size=`$NGX_AUTOTEST`
-    echo " $ngx_size bytes"
+    if [ -x $NGX_AUTOTEST ]; then
+        ngx_size=`$NGX_AUTOTEST`
+        echo " $ngx_size bytes"
+    fi
 fi
-
 
 case $ngx_size in
     4)

@@ -191,6 +191,7 @@ do
         --group=*)                       NGX_GROUP="$value"         ;;
 
         --crossbuild=*)                  NGX_PLATFORM="$value"      ;;
+        --crossbuild-config=*)           NGX_CROSSBUILD_CONFIG="$value" ;;
 
         --build=*)                       NGX_BUILD="$value"         ;;
         --builddir=*)                    NGX_OBJS="$value"          ;;
@@ -416,6 +417,8 @@ cat << END
   --group=GROUP                      set non-privileged group for
                                      worker processes
 
+  --crossbuild-config=FILE           set config file for crossbuild
+
   --build=NAME                       set build name
   --builddir=DIR                     set build directory
 
@@ -589,6 +592,12 @@ fi
 
 if [ ".$NGX_PLATFORM" = ".win32" ]; then
     NGX_WINE=$WINE
+elif [ ! -z "$NGX_PLATFORM" ]; then
+    NGX_CROSS_COMPILE="yes"
+fi
+
+if [ ! -z "$NGX_CROSSBUILD_CONFIG" ]; then
+    . $NGX_CROSSBUILD_CONFIG
 fi
 
 
